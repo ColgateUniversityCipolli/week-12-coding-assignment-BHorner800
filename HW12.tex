@@ -1,4 +1,54 @@
-\documentclass{article}
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{xcolor}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlsng}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hldef}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
 \usepackage[margin=1.0in]{geometry} % To set margins
 \usepackage{amsmath}  % This allows me to use the align functionality.
                       % If you find yourself trying to replicate
@@ -12,12 +62,9 @@
 \usepackage{float}    % For telling R where to put a table/figure
 \usepackage{natbib}        %For the bibliography
 \bibliographystyle{apalike}%For the bibliography
-
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
-<<echo=F, message=F, warning=F>>=
-library(tidyverse)
-library(VGAM)
-@
+
 
 \begin{enumerate}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -51,13 +98,17 @@ alternative.
   \item What values of $t_{20}$ provide statistically discernible support for the
   alternative hypothesis?
   \textbf{Solution:} We can calculate the value of $t_{20}$ that provide discernible support for the alternative by finding the t-value that is where the $\alpha = 0.05$ cutoff is. For $t_{20}$, that value is 1.7291, so any values greater than or equal to that provide support for the alternative.
-  <<eval = F, message = F, warning = F, size = 'scriptsize' >>=
-#values of t20 that provide support
-alpha = 0.05
-n = 20  # sample size
-df <- n - 1  # degrees of freedom
-t_crit_20 <- qt(1 - alpha, df = df) 
-@
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#values of t20 that provide support}
+\hldef{alpha} \hlkwb{=} \hlnum{0.05}
+\hldef{n} \hlkwb{=} \hlnum{20}  \hlcom{# sample size}
+\hldef{df} \hlkwb{<-} \hldef{n} \hlopt{-} \hlnum{1}  \hlcom{# degrees of freedom}
+\hldef{t_crit_20} \hlkwb{<-} \hlkwd{qt}\hldef{(}\hlnum{1} \hlopt{-} \hldef{alpha,} \hlkwc{df} \hldef{= df)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
   \item What values of $t_{30}$ provide statistically discernible support for the
   alternative hypothesis?
   \textbf{Solution:} Using the same approach as for $t_{20}$, but replacing n=20 with n=30, we find that the $\alpha = 0.05$ t-value is 1.6991, and consequently any values greater than this provide statistically discernible support for the alternative.
@@ -68,43 +119,47 @@ t_crit_20 <- qt(1 - alpha, df = df)
   
   
   \textbf{Solution:} To conduct the simulation study, we take $n$ number of observations ($X$) from the Laplace distribution $a = 0$ and $b = 4.0$. For this set of $X$, we then calculate the t-statistic using the formula provided above, as we can calculate the mean and standard deviation for the simulated observations and we also know $n$ (either 20 or 30). Then, we compare this t-statistic to the critical points we calculated in a) and b), where if the simulated t-statistic is greater than the critical point, we reject the null hypothesis. By counting the number of rejections in the 10000 samples, and then dividing it by the total number of samples (10000), we can calculate the Type I error. We find that for $t_{20}$, the $Type I error = 0.0510$ and for $t_{20}$ $Type I error = 0.0494$. These values are close to the expected $\alpha = 0.05$. 
-  <<eval = F, message = F, warning = F, size = 'scriptsize'>>=
-#Simulation Study for Type I error
-R = 10000 #number of sims
-alpha = 0.05
-set.seed = 151
-a = 0
-b = 4
-n = 20 #t_20
-rejects = 0 #will add to this for each time we reject H0
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#Simulation Study for Type I error}
+\hldef{R} \hlkwb{=} \hlnum{10000} \hlcom{#number of sims}
+\hldef{alpha} \hlkwb{=} \hlnum{0.05}
+\hldef{set.seed} \hlkwb{=} \hlnum{151}
+\hldef{a} \hlkwb{=} \hlnum{0}
+\hldef{b} \hlkwb{=} \hlnum{4}
+\hldef{n} \hlkwb{=} \hlnum{20} \hlcom{#t_20}
+\hldef{rejects} \hlkwb{=} \hlnum{0} \hlcom{#will add to this for each time we reject H0}
 
-for (i in 1:R) {
-  x <- rlaplace(n, location = a, scale = b)
-  #take observation (x) from the Laplace dist. n times
-  t = mean(x) / (sd(x) / sqrt(n)) #T-stat formula
-  
-  #Compare to critical point calculated in a) and b)
-  if (t > t_crit_20){
-    rejects = rejects + 1
-  }
-}
-TypeI_20 = rejects/R
-  
-n = 30 #t_30
-rejects = 0 #will add to this for each time we reject H0
+\hlkwa{for} \hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R) \{}
+\hldef{x} \hlkwb{<-} \hlkwd{rlaplace}\hldef{(n,} \hlkwc{location} \hldef{= a,} \hlkwc{scale} \hldef{= b)}
+\hlcom{#take observation (x) from the Laplace dist. n times}
+\hldef{t} \hlkwb{=} \hlkwd{mean}\hldef{(x)} \hlopt{/} \hldef{(}\hlkwd{sd}\hldef{(x)} \hlopt{/} \hlkwd{sqrt}\hldef{(n))} \hlcom{#T-stat formula}
 
-for (i in 1:R) {
-  x <- rlaplace(n, location = a, scale = b)
-  #take observation (x) from the Laplace dist. n times
-  t = mean(x) / (sd(x) / sqrt(n)) #T-stat formula
-  
-  #Compare to critical point calculated in a) and b)
-  if (t > t_crit_30){
-    rejects = rejects + 1
-  }
-}
-TypeI_30 = rejects/R
-@
+\hlcom{#Compare to critical point calculated in a) and b)}
+\hlkwa{if} \hldef{(t} \hlopt{>} \hldef{t_crit_20)\{}
+  \hldef{rejects} \hlkwb{=} \hldef{rejects} \hlopt{+} \hlnum{1}
+\hldef{\}}
+\hldef{\}}
+\hldef{TypeI_20} \hlkwb{=} \hldef{rejects}\hlopt{/}\hldef{R}
+
+\hldef{n} \hlkwb{=} \hlnum{30} \hlcom{#t_30}
+\hldef{rejects} \hlkwb{=} \hlnum{0} \hlcom{#will add to this for each time we reject H0}
+
+\hlkwa{for} \hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R) \{}
+\hldef{x} \hlkwb{<-} \hlkwd{rlaplace}\hldef{(n,} \hlkwc{location} \hldef{= a,} \hlkwc{scale} \hldef{= b)}
+\hlcom{#take observation (x) from the Laplace dist. n times}
+\hldef{t} \hlkwb{=} \hlkwd{mean}\hldef{(x)} \hlopt{/} \hldef{(}\hlkwd{sd}\hldef{(x)} \hlopt{/} \hlkwd{sqrt}\hldef{(n))} \hlcom{#T-stat formula}
+
+\hlcom{#Compare to critical point calculated in a) and b)}
+\hlkwa{if} \hldef{(t} \hlopt{>} \hldef{t_crit_30)\{}
+  \hldef{rejects} \hlkwb{=} \hldef{rejects} \hlopt{+} \hlnum{1}
+\hldef{\}}
+\hldef{\}}
+\hldef{TypeI_30} \hlkwb{=} \hldef{rejects}\hlopt{/}\hldef{R}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
   \item \textbf{Optional Challenge:} Can you find a value of $\alpha<0.05$ that yields a 
   Type I error rate of 0.05?
 \end{enumerate}
