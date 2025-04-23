@@ -121,12 +121,84 @@ TypeI_30 = rejects/R
   \begin{enumerate}
     \item What proportion of the time do we make an error of Type I for a
     left-tailed test?
+    
+    \textbf{Solution:} We conducted the simulation in the same way as for calculating the Type I error for the Laplace distribution. The code was repeated the same for parts b) and c) as in part a), where just $\alpha$ and $\beta$ for the Beta distribution were changed. All the results can be seen in the table after part c. 
+    
+<<eval = F, message = F, size = 'scriptsize'>>=
+##################################
+# Question 2
+##################################
+R = 10000
+n = 15
+#critical t-point which is a = 0.05
+alpha <- 0.05
+df <- n - 1  # degrees of freedom
+
+t15_rtail = qt(1 - alpha, df = df)  #right-tailed text
+t15_ltail = qt(alpha, df = df) #left-tailed test
+t15_2tail_low = qt(alpha/2, df = df) # left side of two tailed
+t15_2tail_high = qt(1 - alpha/2, df = df) #right side of two tailed
+
+##########
+#Beta(10,2)
+##########
+a = 10
+b = 2
+mu = a/(a+b)
+
+left_reject = 0
+right_reject = 0
+twotail_reject = 0
+
+for (i in 1:R){
+  x = rbeta(n = n, shape1 = a, shape2 = b)
+  #left-tailed test
+  t_left = t.test(x, alternative = "less", mu = mu)$statistic
+  if (t_left < t15_ltail){
+    left_reject = left_reject + 1
+  }
+  #right-tailed test
+  t_right = t.test(x, alternative = "greater", mu = mu)$statistic
+  if (t_right > t15_rtail){
+    right_reject = right_reject + 1
+  }
+  #two-tail test
+  t_twotail = t.test(x, alternative = "two.sided", mu = mu)$statistic
+  if (t_twotail < t15_2tail_low | t_twotail > t15_2tail_high){
+    twotail_reject = twotail_reject + 1
+  }
+}
+    
+
+#Calculating the Type I error
+TypeI_left_102 = left_reject/R
+TypeI_right_102 = right_reject/R
+TypeI_2tail_102 = twotail_reject/R
+@
     \item What proportion of the time do we make an error of Type I for a
     right-tailed test?
     \item What proportion of the time do we make an error of Type I for a
     two-tailed test?
+    
+    % latex table generated in R 4.4.2 by xtable 1.8-4 package
+% Wed Apr 23 16:22:08 2025
+\begin{table}[ht]
+\centering
+\begin{tabular}{rlrrr}
+  \hline
+ & Beta & left\_tailed & right\_tailed & two\_tailed \\ 
+  \hline
+1 & Beta(10,2) & 0.03 & 0.08 & 0.06 \\ 
+  2 & Beta(2,10) & 0.08 & 0.03 & 0.06 \\ 
+  3 & Beta(10,10) & 0.05 & 0.05 & 0.05 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    
     \item How does skewness of the underlying population distribution effect
     Type I error across the test types?
+    
+    \textbf{Solution:} The Beta(10,2) distribution is left skewed. As such, it has a lower Type I error for the left-tailed distribution and a higher error for the right-tailed.  The inverse is true for the Beta(2,10) as it is right skewed. Finally, as Beta(10,10) is symmetric, it makes sense that the left and right-tailed tests result in the same Type I error, which would also match the two-tailed test.
   \end{enumerate}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

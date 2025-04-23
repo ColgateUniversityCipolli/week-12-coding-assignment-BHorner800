@@ -176,12 +176,88 @@ alternative.
   \begin{enumerate}
     \item What proportion of the time do we make an error of Type I for a
     left-tailed test?
+    
+    \textbf{Solution:} We conducted the simulation in the same way as for calculating the Type I error for the Laplace distribution. The code was repeated the same for parts b) and c) as in part a), where just $\alpha$ and $\beta$ for the Beta distribution were changed. All the results can be seen in the table after part c. 
+    
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{##################################}
+\hlcom{# Question 2}
+\hlcom{##################################}
+\hldef{R} \hlkwb{=} \hlnum{10000}
+\hldef{n} \hlkwb{=} \hlnum{15}
+\hlcom{#critical t-point which is a = 0.05}
+\hldef{alpha} \hlkwb{<-} \hlnum{0.05}
+\hldef{df} \hlkwb{<-} \hldef{n} \hlopt{-} \hlnum{1}  \hlcom{# degrees of freedom}
+
+\hldef{t15_rtail} \hlkwb{=} \hlkwd{qt}\hldef{(}\hlnum{1} \hlopt{-} \hldef{alpha,} \hlkwc{df} \hldef{= df)}  \hlcom{#right-tailed text}
+\hldef{t15_ltail} \hlkwb{=} \hlkwd{qt}\hldef{(alpha,} \hlkwc{df} \hldef{= df)} \hlcom{#left-tailed test}
+\hldef{t15_2tail_low} \hlkwb{=} \hlkwd{qt}\hldef{(alpha}\hlopt{/}\hlnum{2}\hldef{,} \hlkwc{df} \hldef{= df)} \hlcom{# left side of two tailed}
+\hldef{t15_2tail_high} \hlkwb{=} \hlkwd{qt}\hldef{(}\hlnum{1} \hlopt{-} \hldef{alpha}\hlopt{/}\hlnum{2}\hldef{,} \hlkwc{df} \hldef{= df)} \hlcom{#right side of two tailed}
+
+\hlcom{##########}
+\hlcom{#Beta(10,2)}
+\hlcom{##########}
+\hldef{a} \hlkwb{=} \hlnum{10}
+\hldef{b} \hlkwb{=} \hlnum{2}
+\hldef{mu} \hlkwb{=} \hldef{a}\hlopt{/}\hldef{(a}\hlopt{+}\hldef{b)}
+
+\hldef{left_reject} \hlkwb{=} \hlnum{0}
+\hldef{right_reject} \hlkwb{=} \hlnum{0}
+\hldef{twotail_reject} \hlkwb{=} \hlnum{0}
+
+\hlkwa{for} \hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R)\{}
+  \hldef{x} \hlkwb{=} \hlkwd{rbeta}\hldef{(}\hlkwc{n} \hldef{= n,} \hlkwc{shape1} \hldef{= a,} \hlkwc{shape2} \hldef{= b)}
+  \hlcom{#left-tailed test}
+  \hldef{t_left} \hlkwb{=} \hlkwd{t.test}\hldef{(x,} \hlkwc{alternative} \hldef{=} \hlsng{"less"}\hldef{,} \hlkwc{mu} \hldef{= mu)}\hlopt{$}\hldef{statistic}
+  \hlkwa{if} \hldef{(t_left} \hlopt{<} \hldef{t15_ltail)\{}
+    \hldef{left_reject} \hlkwb{=} \hldef{left_reject} \hlopt{+} \hlnum{1}
+  \hldef{\}}
+  \hlcom{#right-tailed test}
+  \hldef{t_right} \hlkwb{=} \hlkwd{t.test}\hldef{(x,} \hlkwc{alternative} \hldef{=} \hlsng{"greater"}\hldef{,} \hlkwc{mu} \hldef{= mu)}\hlopt{$}\hldef{statistic}
+  \hlkwa{if} \hldef{(t_right} \hlopt{>} \hldef{t15_rtail)\{}
+    \hldef{right_reject} \hlkwb{=} \hldef{right_reject} \hlopt{+} \hlnum{1}
+  \hldef{\}}
+  \hlcom{#two-tail test}
+  \hldef{t_twotail} \hlkwb{=} \hlkwd{t.test}\hldef{(x,} \hlkwc{alternative} \hldef{=} \hlsng{"two.sided"}\hldef{,} \hlkwc{mu} \hldef{= mu)}\hlopt{$}\hldef{statistic}
+  \hlkwa{if} \hldef{(t_twotail} \hlopt{<} \hldef{t15_2tail_low} \hlopt{|} \hldef{t_twotail} \hlopt{>} \hldef{t15_2tail_high)\{}
+    \hldef{twotail_reject} \hlkwb{=} \hldef{twotail_reject} \hlopt{+} \hlnum{1}
+  \hldef{\}}
+\hldef{\}}
+
+
+\hlcom{#Calculating the Type I error}
+\hldef{TypeI_left_102} \hlkwb{=} \hldef{left_reject}\hlopt{/}\hldef{R}
+\hldef{TypeI_right_102} \hlkwb{=} \hldef{right_reject}\hlopt{/}\hldef{R}
+\hldef{TypeI_2tail_102} \hlkwb{=} \hldef{twotail_reject}\hlopt{/}\hldef{R}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
     \item What proportion of the time do we make an error of Type I for a
     right-tailed test?
     \item What proportion of the time do we make an error of Type I for a
     two-tailed test?
+    
+    % latex table generated in R 4.4.2 by xtable 1.8-4 package
+% Wed Apr 23 16:22:08 2025
+\begin{table}[ht]
+\centering
+\begin{tabular}{rlrrr}
+  \hline
+ & Beta & left\_tailed & right\_tailed & two\_tailed \\ 
+  \hline
+1 & Beta(10,2) & 0.03 & 0.08 & 0.06 \\ 
+  2 & Beta(2,10) & 0.08 & 0.03 & 0.06 \\ 
+  3 & Beta(10,10) & 0.05 & 0.05 & 0.05 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    
     \item How does skewness of the underlying population distribution effect
     Type I error across the test types?
+    
+    \textbf{Solution:} The Beta(10,2) distribution is left skewed. As such, it has a lower Type I error for the left-tailed distribution and a higher error for the right-tailed.  The inverse is true for the Beta(2,10) as it is right skewed. Finally, as Beta(10,10) is symmetric, it makes sense that the left and right-tailed tests result in the same Type I error, which would also match the two-tailed test.
   \end{enumerate}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
